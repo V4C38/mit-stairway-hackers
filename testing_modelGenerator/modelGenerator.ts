@@ -11,8 +11,9 @@ const apiKeys = JSON.parse(fs.readFileSync(apiKeysPath, 'utf8'));
 
 const stabilityAIKey: string = apiKeys.StabilityAI;
 const openAIKey: string = apiKeys.OpenAI;
+const githubToken: string = apiKeys.GitHub;
 
-// Example usage
+// Debug prints
 console.log('StabilityAI Key:', stabilityAIKey);
 console.log('OpenAI Key:', openAIKey);
 // ------------------------------------------------------------------------------------------
@@ -22,11 +23,13 @@ const promptModifierImage = fs.readFileSync(promptModifierImagePath, 'utf8');
 
 // Function to sanitize file name
 function sanitizeFileName(input: string): string {
+    console.log(`Sanitizing file name for: ${input}`);
     return input.trim().replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);
 }
 
 // Function to optimize prompt using OpenAI API
 async function optimizePrompt(inputPrompt: string, modifier: string): Promise<string> {
+    console.log(`Optimizing prompt: ${inputPrompt}`);
     const apiUrl = "https://api.openai.com/v1/chat/completions";
     try {
         const response = await axios.post(
@@ -64,6 +67,7 @@ async function optimizePrompt(inputPrompt: string, modifier: string): Promise<st
 
 // Function to generate an image (now .png instead of .webp)
 async function generateImage(prompt: string): Promise<string> {
+    console.log(`Generating image for prompt: ${prompt}`);
     const apiUrl = "https://api.stability.ai/v2beta/stable-image/generate/core";
 
     // Optimize the prompt using OpenAI API
@@ -71,17 +75,12 @@ async function generateImage(prompt: string): Promise<string> {
 
     const startTime = Date.now();
     try {
-        // Prepare form data
-        const payload = {
-            prompt: optimizedPrompt,
-            output_format: "png"
-        };
+        const payload = { prompt: optimizedPrompt, output_format: "png" };
         const formData = new FormData();
         for (const [key, value] of Object.entries(payload)) {
             formData.append(key, value);
         }
 
-        // Post to Stability AI using multipart/form-data
         const response = await axios.post(apiUrl, formData, {
             headers: {
                 Authorization: `Bearer ${stabilityAIKey}`,
@@ -108,50 +107,98 @@ async function generateImage(prompt: string): Promise<string> {
     }
 }
 
-// Function to generate a 3D model from an image (new endpoint + debug logs)
+// Function to retrieve file SHA from GitHub
+async function getFileSha(): Promise<string | null> {
+    console.log("Retrieving file SHA from GitHub...");
+    try {
+        const url = "https://api.github.com/repos/V4C38/mit-stairway-hackers-models/contents/docs/generated_model.glb";
+        const response = await axios.get(url, {
+            headers: { Authorization: `Bearer ${githubToken}` },
+        });
+        console.log(`File SHA retrieved: ${response.data.sha}`);
+        return response.data.sha || null;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response && error.response.status === 404) {
+            console.log("File not found on GitHub (404). Returning null.");
+            return null;
+        }
+        console.error("Failed to retrieve file SHA:", error);
+        throw error;
+    }
+}
+
+// Function to upload generated model to GitHub
+async function uploadToGitHub(filePath: string) {
+    console.log(`Uploading ${filePath} to GitHub...`);
+    const content = fs.readFileSync(filePath).toString("base64");
+    const sha = await getFileSha();
+
+    const payload: Record<string, any> = {
+        message: "Update Model",
+        content, // base64-encoded
+        branch: "main"
+    };
+
+    if (sha) {
+        payload.sha = sha;
+        console.log(`Using existing SHA: ${sha}`);
+    } else {
+        console.log("No existing file found; creating new.");
+    }
+
+    try {
+        await axios.put(
+            "https://api.github.com/repos/V4C38/mit-stairway-hackers-models/contents/docs/generated_model.glb",
+            payload,
+            {
+                headers: {
+                    Authorization: `Bearer ${githubToken}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        console.log("Model successfully uploaded to GitHub.");
+    } catch (error) {
+        console.error("Failed to upload model to GitHub:", error);
+        throw error;
+    }
+}
+
+// Function to generate a 3D model
 export async function generate3DModel(prompt: string): Promise<string> {
+    console.log(`Generating 3D model for prompt: ${prompt}`);
     const apiUrl = "https://api.stability.ai/v2beta/3d/stable-fast-3d";
 
     const startTime = Date.now();
     try {
-        // Generate the image first
-        const inputImageStartTime = Date.now();
         const inputImagePath = await generateImage(prompt);
-        const inputImageElapsedTime = (Date.now() - inputImageStartTime) / 1000;
-
-        // Ensure the image path is correct
         console.log(`Using generated image: ${inputImagePath}`);
 
-        // Set up the form data for the 3D model generation request
         const formData = new FormData();
         formData.append("image", fs.createReadStream(inputImagePath));
         formData.append("texture_resolution", "512");
         formData.append("foreground_ratio", "0.7");
 
-        const modelStartTime = Date.now();
-
-        // Make the POST request to the Stability AI 3D model generation API
         const response = await axios.post(apiUrl, formData, {
             headers: {
                 Authorization: `Bearer ${stabilityAIKey}`,
                 ...formData.getHeaders(),
             },
-            responseType: "arraybuffer", // Expect a binary blob response
+            responseType: "arraybuffer",
         });
 
-        // Check if the response is successful
         if (response.status === 200) {
             const sanitizedFileName = `gen_${sanitizeFileName(prompt)}.glb`;
             const outputPath = path.resolve(__dirname, sanitizedFileName);
             fs.writeFileSync(outputPath, Buffer.from(response.data));
+            fs.renameSync(outputPath, "generated_model.glb");
 
-            const modelElapsedTime = (Date.now() - modelStartTime) / 1000;
-            const totalElapsedTime = (Date.now() - startTime) / 1000;
+            console.log(`3D model generated successfully at: generated_model.glb`);
+            await uploadToGitHub("generated_model.glb");
 
-            console.log(`3D model generated successfully at: ${outputPath}`);
-            console.log(`Elapsed Time - Image Generation: ${inputImageElapsedTime}s, Model Generation: ${modelElapsedTime}s, Total: ${totalElapsedTime}s`);
-
-            return outputPath; // Return the path to the generated model
+            const elapsedTime = (Date.now() - startTime) / 1000;
+            console.log(`Total Elapsed Time: ${elapsedTime}s`);
+            return "generated_model.glb";
         } else {
             throw new Error(`3D model generation failed: ${response.status} - ${response.data.toString()}`);
         }
