@@ -4,6 +4,8 @@ import express from 'express';
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
 import ffmpeg from 'fluent-ffmpeg';
+import { generate3DModel } from './modelGenerator';
+
 
 const app = express();
 const port = 3000; // Port for the server
@@ -139,6 +141,7 @@ async function transcribeAudio(filePath: string) {
     });
 
     console.log('Transcription:', transcription.text);
+    generate3DModel(transcription.text);
   } catch (error) {
     console.error('Error during transcription:', error);
   }
