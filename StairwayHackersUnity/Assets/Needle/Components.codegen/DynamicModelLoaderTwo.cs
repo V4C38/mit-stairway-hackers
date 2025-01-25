@@ -5,8 +5,9 @@
 
 namespace Needle.Typescript.GeneratedComponents
 {
-	public partial class DynamicModelLoading : UnityEngine.MonoBehaviour
+	public partial class DynamicModelLoaderTwo : UnityEngine.MonoBehaviour
 	{
+		public string @prefabPath = "/prefabs/MyPrefab";
 		public void start(){}
 		public void loadModel(string @url){}
 		public void onDestroy(){}
