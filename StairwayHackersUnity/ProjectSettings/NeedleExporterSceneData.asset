@@ -13,10 +13,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Scenes:
+  - Path: Assets/NeedleScene.unity
+    Projects: []
+    BuilderScene: 
+  - Path: Assets/Samples/Needle Engine/Sandbox.unity
+    Projects:
+    - ProjectPath: Library/Needle/Sample
+    BuilderScene: 
   - Path: Assets/Scenes/SampleScene.unity
     Projects: []
     BuilderScene: 
-  - Path: Assets/Scenes/NeedleScene.unity
-    Projects: []
+  - Path: Assets/Samples/Needle Engine/Worldspace UI.unity
+    Projects:
+    - ProjectPath: Library/Needle/Sample
     BuilderScene: 
-  Projects: []
+  - Path: Assets/Samples/Needle Engine/PresencePlatformRoomTracking.unity
+    Projects:
+    - ProjectPath: Library/Needle/Sample
+    BuilderScene: 
+  Projects:
+  - ProjectPath: Library/Needle/Sample

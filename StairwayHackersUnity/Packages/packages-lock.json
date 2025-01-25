@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.needle.engine-exporter": {
-      "version": "3.51.3",
+      "version": "4.1.0-beta",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -19,11 +19,11 @@
       "url": "https://packages.needle.tools"
     },
     "com.needle.engine-samples": {
-      "version": "0.18.0",
+      "version": "0.20.0-exp.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.needle.engine-exporter": "3.47.6",
+        "com.needle.engine-exporter": "4.1.0-alpha.7",
         "com.unity.cloud.draco": "5.1.2",
         "com.unity.cloud.ktx": "3.3.0",
         "com.unity.meshopt.decompress": "0.1.0-preview.6"
