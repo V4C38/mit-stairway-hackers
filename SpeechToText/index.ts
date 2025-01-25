@@ -3,7 +3,7 @@ import mic from 'mic';
 import express from 'express';
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
-import ffmpeg from 'fluent-ffmpeg';
+import ffmpeg from 'fluent-ffmpeg'; 
 
 const app = express();
 const port = 3000; // Port for the server
