@@ -23,11 +23,7 @@ MonoBehaviour:
   - Path: Assets/Scenes/SampleScene.unity
     Projects: []
     BuilderScene: 
-  - Path: Assets/Samples/Needle Engine/Worldspace UI.unity
-    Projects:
-    - ProjectPath: Library/Needle/Sample
-    BuilderScene: 
-  - Path: Assets/Samples/Needle Engine/PresencePlatformRoomTracking.unity
+  - Path: Assets/MainLevel.unity
     Projects:
     - ProjectPath: Library/Needle/Sample
     BuilderScene: 
