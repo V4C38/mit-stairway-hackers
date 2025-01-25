@@ -27,5 +27,9 @@ MonoBehaviour:
     Projects:
     - ProjectPath: Library/Needle/Sample
     BuilderScene: 
+  - Path: Assets/Samples/Needle Engine/ExternalContent.unity
+    Projects:
+    - ProjectPath: Library/Needle/Sample
+    BuilderScene: 
   Projects:
   - ProjectPath: Library/Needle/Sample
