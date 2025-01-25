@@ -6,164 +6,159 @@ import dotenv from 'dotenv';
 import ffmpeg from 'fluent-ffmpeg';
 import { generate3DModel } from './modelGenerator';
 
-
 const app = express();
-const port = 3000; // Port for the server
-let wavFilePath = 'temp.wav';  // Default path
-let tempWavPath = 'temp_converted.wav';  // Temporary path for converted WAV
+const port = 3000;
 
-dotenv.config(); // Load environment variables
+dotenv.config();
 
-// Initialize OpenAI API
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Store your key in an .env file
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Create a new mic instance
-const micInstance = mic({
-  rate: '16000', // Required rate for Whisper
-  channels: '1',
-  debug: false,
-  fileType: 'wav', // Record directly in WAV format
-});
+let micInstance = null;
+let micInputStream = null;
+let outputFileStream = null;
+let wavFilePath = '';
+let tempWavPath = '';
+let isRecording = false;
 
-const micInputStream = micInstance.getAudioStream();
-let isRecording = false;  // Flag to prevent overlapping start/stop actions
-let fileStreamFinished = false;  // Flag to track file stream completion
+function createMicInstance() {
+  micInstance = mic({
+    rate: '16000',
+    channels: '1',
+    debug: false,
+    fileType: 'wav',
+  });
+  micInputStream = micInstance.getAudioStream();
+}
 
-// Start recording when called
 function startRecording() {
   return new Promise((resolve, reject) => {
-    if (isRecording) return reject('Already recording'); // Prevent starting if already recording
-    console.log('Recording started...');
+    if (isRecording) return reject('Already recording');
 
-    // Reset fileStreamFinished flag before starting
-    fileStreamFinished = false;
+    // Cleanup any existing streams
+    if (micInputStream) {
+      micInputStream.removeAllListeners();
+      micInputStream.destroy();
+    }
+
+    if (outputFileStream) {
+      outputFileStream.end();
+    }
+
+    // Create new mic instance
+    createMicInstance();
+
+    console.log('Recording started...');
 
     const timestamp = new Date().getTime();
     wavFilePath = `temp_${timestamp}.wav`;
-    tempWavPath = `temp_converted_${timestamp}.wav`;  // Unique file names to avoid overwriting
+    tempWavPath = `temp_converted_${timestamp}.wav`;
 
-    const outputFileStream = fs.createWriteStream(wavFilePath);
+    outputFileStream = fs.createWriteStream(wavFilePath);
     micInputStream.pipe(outputFileStream);
 
     micInstance.start();
     isRecording = true;
 
-    micInputStream.on('error', (err) => {
-      console.error('Mic error:', err);
-      reject(err);
-    });
+    const timeout = setTimeout(() => {
+      console.log('Recording timeout');
+      stopRecording();
+    }, 10000); // 10-second max recording time
 
-    // Wait for the file stream to finish writing
     outputFileStream.on('finish', () => {
+      clearTimeout(timeout);
       console.log('File stream finished writing');
-      fileStreamFinished = true;  // Mark the file as fully written
-      resolve();  // Resolve the promise when the file stream is finished
+      resolve();
     });
 
-    outputFileStream.on('error', (err) => {
-      console.error('Error during file write:', err);
-      reject(err);  // Reject the promise if there's an error
+    micInputStream.on('error', (err) => {
+      clearTimeout(timeout);
+      console.error('Mic input stream error:', err);
+      reject(err);
     });
   });
 }
 
-// Stop recording and send the WAV file for transcription
 async function stopRecording() {
-  if (!isRecording) return; // Prevent stopping if not recording
+  if (!isRecording) return;
+
   console.log('Recording stopped...');
-  micInstance.stop();
+
+  // Stop mic and end streams
+  if (micInstance) {
+    micInstance.stop();
+  }
+
+  if (micInputStream) {
+    micInputStream.destroy();
+  }
+
+  if (outputFileStream) {
+    outputFileStream.end();
+  }
+
   isRecording = false;
 
   try {
-    // Wait until file stream has finished before proceeding
-    await new Promise((resolve) => {
-      if (fileStreamFinished) {
-        resolve();
-      } else {
-        setTimeout(() => {
-          resolve();
-        }, 1000); // Wait a second to allow file write to complete
-      }
-    });
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-    console.log(`WAV file saved to ${wavFilePath}`);
-
-    // Check if the file exists and has content before converting
     if (fs.existsSync(wavFilePath) && fs.statSync(wavFilePath).size > 0) {
       console.log(`WAV file found, converting to correct format...`);
-      // Re-encode the WAV file to the correct format (16-bit, mono, 16000 Hz)
       await convertToCorrectWavFormat(wavFilePath, tempWavPath);
 
-      // Check if the converted file exists and has content
       if (fs.existsSync(tempWavPath) && fs.statSync(tempWavPath).size > 0) {
-        // Transcribe the corrected WAV file
         await transcribeAudio(tempWavPath);
       } else {
-        console.error('Error: Converted WAV file is empty or does not exist.');
+        console.error('Converted WAV file is empty');
       }
     } else {
-      console.error('Error: WAV file is empty or does not exist.');
+      console.error('WAV file is empty');
     }
   } catch (error) {
     console.error('Error during stop recording:', error);
   }
 }
 
-// Convert the WAV file to the required format (16-bit, mono, 16000 Hz)
 function convertToCorrectWavFormat(inputFilePath, outputFilePath) {
   return new Promise((resolve, reject) => {
     ffmpeg(inputFilePath)
-      .audioCodec('pcm_s16le') // Ensure 16-bit PCM encoding
-      .audioChannels(1) // Mono audio
-      .audioFrequency(16000) // 16kHz sample rate
-      .format('wav') // Output WAV format
+      .audioCodec('pcm_s16le')
+      .audioChannels(1)
+      .audioFrequency(16000)
+      .format('wav')
       .save(outputFilePath)
-      .on('end', () => {
-        console.log(`WAV file converted to correct format: ${outputFilePath}`);
-        resolve();
-      })
-      .on('error', (err) => {
-        console.error('Error during WAV conversion:', err);
-        reject(err);
-      });
+      .on('end', resolve)
+      .on('error', reject);
   });
 }
 
-// Function to send the WAV file to OpenAI API for transcription
-async function transcribeAudio(filePath: string) {
+async function transcribeAudio(filePath) {
   try {
-    console.log('Sending audio file for transcription...');
     const transcription = await openai.audio.transcriptions.create({
       file: fs.createReadStream(filePath),
-      model: 'whisper-1', // Specify the model
+      model: 'whisper-1',
     });
 
     console.log('Transcription:', transcription.text);
-    generate3DModel(transcription.text);
+    //generate3DModel(transcription.text);
   } catch (error) {
     console.error('Error during transcription:', error);
   }
 }
 
-// Setup Express routes for start/stop actions
-app.use(express.static('public')); // Serve static files from 'public' folder
+app.use(express.static('public'));
 
 app.post('/start', (req, res) => {
-  startRecording().then(() => {
-    res.send('Recording started');
-  }).catch(err => {
-    res.status(500).send('Error starting recording: ' + err.message);
-  });
+  startRecording()
+    .then(() => res.send('Recording started'))
+    .catch(err => res.status(500).send('Error starting recording: ' + err.message));
 });
 
 app.post('/stop', (req, res) => {
-  stopRecording().then(() => {
-    res.send('Recording stopped');
-  }).catch(err => {
-    res.status(500).send('Error stopping recording: ' + err.message);
-  });
+  stopRecording()
+    .then(() => res.send('Recording stopped'))
+    .catch(err => res.status(500).send('Error stopping recording: ' + err.message));
 });
 
 app.listen(port, () => {
