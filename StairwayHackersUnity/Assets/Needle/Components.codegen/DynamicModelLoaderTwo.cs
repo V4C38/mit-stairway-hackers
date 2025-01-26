@@ -7,7 +7,8 @@ namespace Needle.Typescript.GeneratedComponents
 {
 	public partial class DynamicModelLoaderTwo : UnityEngine.MonoBehaviour
 	{
-		public string @prefabPath = "/prefabs/MyPrefab";
+		public UnityEngine.GameObject @myObjectReference;
+		public UnityEngine.Transform @myPrefab;
 		public void start(){}
 		public void loadModel(string @url){}
 		public void onDestroy(){}

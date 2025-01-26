@@ -1474,6 +1474,7 @@ GameObject:
   - component: {fileID: 413088390}
   - component: {fileID: 413088391}
   - component: {fileID: 413088392}
+  - component: {fileID: 413088393}
   m_Layer: 0
   m_Name: DynamicModelLoader
   m_TagString: Untagged
@@ -1503,7 +1504,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 413088389}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09341bbe608c2d85e46af01a4c4e61c0, type: 3}
   m_Name: 
@@ -1515,13 +1516,26 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 413088389}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f7760b7af3453d3309b5564f8fbafb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myStringField: Hello World
-  prefabPath: Assets/Dynamic_Object_Prefab.prefab
+  myObjectReference: {fileID: 8301532712077447128, guid: 2c7c4406608d44a639461ae0f4142b1b, type: 3}
+  myPrefab: {fileID: 5577160477910336862, guid: 2c7c4406608d44a639461ae0f4142b1b, type: 3}
+--- !u!114 &413088393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413088389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 805421eabb500b55616deb2767b3041a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myPrefab: {fileID: 5577160477910336862, guid: 2c7c4406608d44a639461ae0f4142b1b, type: 3}
 --- !u!1 &443585377
 GameObject:
   m_ObjectHideFlags: 0

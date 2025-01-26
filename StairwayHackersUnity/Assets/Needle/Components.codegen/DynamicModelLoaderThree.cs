@@ -5,9 +5,12 @@
 
 namespace Needle.Typescript.GeneratedComponents
 {
-	public partial class DynamicModelLoader : UnityEngine.MonoBehaviour
+	public partial class DynamicModelLoaderThree : UnityEngine.MonoBehaviour
 	{
+		public UnityEngine.Transform @myPrefab;
 		public void start(){}
+		public void loadModel(string @url){}
+		public void onDestroy(){}
 	}
 }
 
