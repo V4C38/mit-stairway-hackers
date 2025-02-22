@@ -74,3 +74,14 @@ crashlytics-build.properties
 testing_modelGenerator/src/apiKeys.json
 StairwayHackersUnity/.DS_Store
 .DS_Store
+
+
+
+SpeechToText/*.env
+SpeechToText/*.png
+SpeechToText/*.glb
+SpeechToText/*.wav
+SpeechToText/*.mp3
+SpeechToText/.idea
+SpeechToText/node_modules/
+SpeechToText/src/apiKeys.json

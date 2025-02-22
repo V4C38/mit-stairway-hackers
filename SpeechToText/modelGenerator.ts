@@ -4,15 +4,13 @@ import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-
 // Simulate __dirname in ES module
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
 
 // ------------------------------------------------------------------------------------------
 // Retrieve API keys from gitIgnored apiKeys.json to allow safe GIT pushing
 // ------------------------------------------------------------------------------------------
-const apiKeysPath = path.resolve(__dirname, '../src/apiKeys.json');
+const apiKeysPath = path.resolve(__dirname, 'src/apiKeys.json');
 const apiKeys = JSON.parse(fs.readFileSync(apiKeysPath, 'utf8'));
 
 const stabilityAIKey: string = apiKeys.StabilityAI;
@@ -23,7 +21,7 @@ console.log('StabilityAI Key:', stabilityAIKey);
 console.log('OpenAI Key:', openAIKey);
 // ------------------------------------------------------------------------------------------
 
-const promptModifierImagePath = path.resolve(__dirname, '../src/promptModifier_ImageGenerator.txt');
+const promptModifierImagePath = path.resolve(__dirname, 'src/promptModifier_ImageGenerator.txt');
 const promptModifierImage = fs.readFileSync(promptModifierImagePath, 'utf8');
 
 // Function to sanitize file name

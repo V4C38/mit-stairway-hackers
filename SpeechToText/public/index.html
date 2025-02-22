@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Recorder</title>
+</head>
+<body>
+<h1>Audio Recorder</h1>
+<button id="startButton">Start Recording</button>
+<button id="stopButton">Stop Recording</button>
+
+<script>
+  document.getElementById('startButton').addEventListener('click', () => {
+    fetch('/start', {
+      method: 'POST',
+    })
+      .then((response) => response.text())
+      .then((message) => {
+        console.log(message);
+      })
+      .catch((error) => {
+        console.error('Error starting recording:', error);
+      });
+  });
+
+  document.getElementById('stopButton').addEventListener('click', () => {
+    fetch('/stop', {
+      method: 'POST',
+    })
+      .then((response) => response.text())
+      .then((message) => {
+        console.log(message);
+      })
+      .catch((error) => {
+        console.error('Error stopping recording:', error);
+      });
+  });
+</script>
+</body>
+</html>
