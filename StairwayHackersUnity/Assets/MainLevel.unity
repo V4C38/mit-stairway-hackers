@@ -2345,7 +2345,7 @@ MonoBehaviour:
   minPolarAngle: 0
   maxPolarAngle: 3.1415927
   minAzimuthAngle: -6.2831845
-  maxAzimuthAngle: Infinity
+  maxAzimuthAngle: 6.2831855
   enableZoom: 1
   minZoom: 0
   maxZoom: 80
