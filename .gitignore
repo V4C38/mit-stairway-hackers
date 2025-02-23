@@ -85,3 +85,6 @@ SpeechToText/*.mp3
 SpeechToText/.idea
 SpeechToText/node_modules/
 SpeechToText/src/apiKeys.json
+My project
+1_NeedleBackend-main/src/apiKeys.json
+1_NeedleBackend-main/.env
