@@ -190,7 +190,7 @@ MonoBehaviour:
   - {fileID: -5416024919765324884}
   - {fileID: 8379940193919550989}
   - {fileID: 918446190599206449}
-  - {fileID: -5516487126888007348}
+  - {fileID: 2773069171208025502}
   exportNames: 1
   exportFullPath: 0
   requireExtensions: 0
@@ -257,6 +257,19 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9571021a85f04ddfb74e8aa5aad9cc5a, type: 3}
   m_Name: UnlitMaterialsExport
+  m_EditorClassIdentifier: 
+  enabled: 1
+--- !u!114 &2773069171208025502
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 437c5d831ea845cbbab39e725149342d, type: 3}
+  m_Name: UnityGltfExporterPlugin
   m_EditorClassIdentifier: 
   enabled: 1
 --- !u!114 &3521127163686174438

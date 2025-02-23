@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",  // Use commonjs
+    "strict": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "index.ts",
+    "modelGenerator.ts"
+  ]
+}
