@@ -941,7 +941,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f7760b7af3453d3309b5564f8fbafb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabPath: Assets/Dynamic_Object_Prefab.prefab
+  prefabPath: Assets/Prefabs/Dynamic_Object_Prefab.prefab
 --- !u!1 &514845770
 GameObject:
   m_ObjectHideFlags: 0
