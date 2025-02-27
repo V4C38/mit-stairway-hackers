@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overrideEnterPlaymode: 1
-  smartExport: 0
+  smartExport: 1
   debugMode: 0
   generateReport: 0
   allowRunningProjectFixes: 1

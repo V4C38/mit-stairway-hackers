@@ -17,27 +17,26 @@ MonoBehaviour:
     Projects: []
     BuilderScene: 
   - Path: Assets/Samples/Needle Engine/Sandbox.unity
-    Projects:
-    - ProjectPath: Library/Needle/Sample
+    Projects: []
     BuilderScene: 
   - Path: Assets/Scenes/SampleScene.unity
     Projects: []
     BuilderScene: 
   - Path: Assets/Samples/Needle Engine/Worldspace UI.unity
-    Projects:
-    - ProjectPath: Library/Needle/Sample
+    Projects: []
     BuilderScene: 
   - Path: Assets/Samples/Needle Engine/PresencePlatformRoomTracking.unity
-    Projects:
-    - ProjectPath: Library/Needle/Sample
+    Projects: []
     BuilderScene: 
   - Path: Assets/MainLevel.unity
-    Projects:
-    - ProjectPath: Library/Needle/Sample
+    Projects: []
     BuilderScene: 
   - Path: Assets/Scenes/MainLevel.unity
+    Projects: []
+    BuilderScene: 
+  - Path: Assets/Scenes/Journify.unity
     Projects:
-    - ProjectPath: Library/Needle/Sample
+    - ProjectPath: Needle/Journify
     BuilderScene: 
   Projects:
-  - ProjectPath: Library/Needle/Sample
+  - ProjectPath: Needle/Journify
